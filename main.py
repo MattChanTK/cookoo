@@ -6,12 +6,30 @@ Matthew Chan; Tammy Fan
 """
 
 from __future__ import print_function
+from Queue import Queue
 
 session_attributes_key = ["user_name",
-                          "question_ids",
-                          "current_question_id",
-                          "score"]
+                          "questions",
+                          "qindex",
+                          "score",
+                          "hindex"]
+
 # --------------- Helpers that build all of the responses ----------------------
+def initialize_game():
+    questions = [{
+                    'q': ['Do you want to build a wall. A huge wall between US and Mexico. Who am I referring to?',
+                        'The guy with flying golden hair who\'s running for the next US president',
+                        'Idiot'],
+                    'a': 'Donald Trump'
+                 },
+                 {
+                     'q': [''],
+                     'a': ''
+                 }]
+    question_index = 1
+    hint_index = 1
+    return {'score': 0, 'questions': questions, 'qindex': question_index, 'hindex': hint_index}
+
 
 def build_speechlet_response(title, output, reprompt_text=None, should_end_session=False):
     return {
@@ -59,7 +77,6 @@ def get_testing_response():
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
 
-
 def read_session_attributes(session):
 
     card_title = "Testing"
@@ -74,17 +91,30 @@ def read_session_attributes(session):
 
 
 # --------------- Functions that control the skill's behavior ------------------
+def get_start_new_game_response():
+    card_title = "New Game"
+    session_attributes = initialize_game()
+    speech_output = "A new game is started. First question: " + session_attributes['questions'][0]['q'][0]
+    should_end_session = False
+    return build_response(session_attributes, build_speechlet_response(
+        card_title, speech_output, speech_output, should_end_session))
+
+def get_next_hint_response(intent, session):
+    session_attributes = session['attributes']
+    question_index = int(session_attributes['qindex'])
+    card_title = 'Hint'
+    hint_index = int(session_attributes['hindex'])
+    speech_output = session_attributes['questions'][question_index][hint_index]
+    session_attributes['hindex'] = hint_index+1 if hint_index < len(session_attributes['questions'][question_index]['q']) else 0
+    should_end_session = False
+    return build_response(session_attributes, build_speechlet_response(
+        card_title, speech_output, speech_output, should_end_session))
 
 def get_welcome_response():
     """ If we wanted to initialize the session to have some attributes we could
     add those here
     """
-    session_attributes = {
-        "user_name" : "Unknown Person",
-        "question_ids" : str(range(5)),
-        "current_question_id" : 0,
-        "score": 0,
-    }
+    session_attributes = initialize_game()
 
     card_title = "Welcome"
     speech_output = "Hello! I am Cookoo. Let's play a game. " \
@@ -95,8 +125,8 @@ def get_welcome_response():
 
 def handle_yes_intent(session):
     try:
-        if int(session["attributes"]["current_question_id"]) ==  0:
-            pass
+        if int(session["attributes"]["qindex"]) ==  1:
+            get_start_new_game_response()
     except:
         handle_exception(session)
 
@@ -121,7 +151,6 @@ def handle_session_end_request():
     should_end_session = True
     return build_response({}, build_speechlet_response(
         card_title, speech_output, None, should_end_session))
-
 
 def set_name_in_session(intent, session):
     """
@@ -159,11 +188,12 @@ def get_name_in_session(session):
     return build_response(session["attributes"], build_speechlet_response(
         card_title, speech_output, None, False))
 
+
 # --------------- Events ------------------
 
 def on_session_started(session_started_request, session):
     """ Called when the session starts """
-
+    initialize_game()
     print("on_session_started requestId=" + session_started_request['requestId']
           + ", sessionId=" + session['sessionId'])
 
@@ -191,16 +221,19 @@ def on_intent(intent_request, session):
     # Dispatch to your skill's intent handlers
     if intent_name == "Testing":
         return get_testing_response()
+
+    if intent_name == "Testing":
+        return get_testing_response()
     elif intent_name == "ReadSessionAttributes":
         return read_session_attributes(session)
-    elif intent_name == "SetUserNameIntent":
+    elif intent_name == "SetTeamNameIntent":
         return set_name_in_session(intent, session)
-    elif intent_name == "GetUserNameIntent":
+    elif intent_name == "GetTeamNameIntent":
         return get_name_in_session(session)
-    elif intent_name == "StartNewGame":
-        return get_testing_response()
-    elif intent_name == "NextHint":
-        return get_testing_response()
+    elif intent_name == "StartNewGameIntent":
+        return get_start_new_game_response()
+    elif intent_name == "NextHintIntent":
+        return get_next_hint_response(intent, session)
     elif intent_name == "AMAZON.YesIntent":
         return handle_yes_intent(session)
     elif intent_name == "AMAZON.NoIntent":
@@ -209,9 +242,7 @@ def on_intent(intent_request, session):
         return get_testing_response()
     elif intent_name == "AMAZON.HelpIntent":
         return get_welcome_response()
-    elif intent_name == "AMAZON.CancelIntent":
-        return get_testing_response()
-    elif intent_name == "AMAZON.StopIntent":
+    elif intent_name == "AMAZON.CancelIntent" or  intent_name == "AMAZON.StopIntent":
         return handle_session_end_request()
     else:
         return handle_unknown_intent(session)

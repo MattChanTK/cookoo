@@ -7,7 +7,7 @@
       "intent": "ReadSessionAttributes"
     },
     {
-      "intent": "SetUserNameIntent",
+      "intent": "SetTeamNameIntent",
       "slots": [
         {
           "name": "user_name",
@@ -16,13 +16,13 @@
       ]
     },
     {
-      "intent": "GetUserNameIntent"
+      "intent": "GetTeamNameIntent"
     },
     {
-      "intent": "StartNewGame"
+      "intent": "StartNewGameIntent"
     },
     {
-      "intent": "NextHint"
+      "intent": "NextHintIntent"
     },
     {
       "intent": "AMAZON.YesIntent"
