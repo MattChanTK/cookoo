@@ -26,7 +26,7 @@ def initialize_game():
                      'q': [''],
                      'a': ''
                  }]
-    question_index = 1
+    question_index = 0
     hint_index = 1
     return {'score': 0, 'questions': questions, 'qindex': question_index, 'hindex': hint_index}
 
@@ -100,15 +100,17 @@ def get_start_new_game_response():
         card_title, speech_output, speech_output, should_end_session))
 
 def get_next_hint_response(intent, session):
+
     session_attributes = session['attributes']
+
     question_index = int(session_attributes['qindex'])
     card_title = 'Hint'
     hint_index = int(session_attributes['hindex'])
-    speech_output = session_attributes['questions'][question_index][hint_index]
+    speech_output = session_attributes['questions'][question_index]['q'][hint_index]
     session_attributes['hindex'] = hint_index+1 if hint_index < len(session_attributes['questions'][question_index]['q']) else 0
-    should_end_session = False
+
     return build_response(session_attributes, build_speechlet_response(
-        card_title, speech_output, speech_output, should_end_session))
+        card_title, speech_output))
 
 def get_welcome_response():
     """ If we wanted to initialize the session to have some attributes we could
@@ -125,7 +127,7 @@ def get_welcome_response():
 
 def handle_yes_intent(session):
     try:
-        if int(session["attributes"]["qindex"]) ==  1:
+        if int(session["attributes"]["qindex"]) ==  0:
             get_start_new_game_response()
     except:
         handle_exception(session)
