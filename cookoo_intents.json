@@ -1,6 +1,9 @@
 {
   "intents": [
     {
+      "intent": "Testing"
+    },
+    {
       "intent": "SetUserNameIntent",
       "slots": [
         {
@@ -13,7 +16,16 @@
       "intent": "GetUserNameIntent"
     },
     {
-        "intent": "Testing"
+      "intent": "StartNewGame"
+    },
+    {
+      "intent": "NextHint"
+    },
+    {
+      "intent": "AMAZON.RepeatIntent"
+    },
+    {
+      "intent": "AMAZON.CancelIntent"
     },
     {
       "intent": "AMAZON.HelpIntent"
