@@ -92,8 +92,8 @@ def set_name_in_session(intent, session):
     should_end_session = False
     session_attributes["user_name"] = "Bob"
 
-    if 'Name' in intent['slots']:
-        user_name = intent['slots']['Color']['value']
+    if 'user_name' in intent['slots'] and 'value' in intent['slots']['user_name']:
+        user_name = intent['slots']['user_name']['value']
         session_attributes["user_name"] = user_name
         speech_output = "I now know your name is %s." % session_attributes["user_name"]
         reprompt_text = None
@@ -143,6 +143,8 @@ def on_intent(intent_request, session):
         return get_welcome_response()
     elif intent_name == "AMAZON.CancelIntent" or intent_name == "AMAZON.StopIntent":
         return handle_session_end_request()
+    elif intent_name == "SetUserNameIntent":
+        return set_name_in_session(intent, session)
     else:
         raise ValueError("Invalid intent")
 

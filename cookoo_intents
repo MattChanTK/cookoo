@@ -1,7 +1,22 @@
 {
   "intents": [
     {
-      "intent": "Testing"
+      "intent": "SetUserNameIntent",
+      "slots": [
+        {
+          "name": "user_name",
+          "type": "PersonName"
+        }
+      ]
+    },
+    {
+        "intent": "Testing"
+    },
+    {
+      "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "AMAZON.StopIntent"
     }
   ]
 }
