@@ -106,6 +106,20 @@ def set_name_in_session(intent, session):
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
 
+def get_name_in_session(intent, session):
+    card_title = intent['name']
+
+    for key, value in session.iteritems():
+        print("%s: %s" % (key, value))
+
+    if "user_name" in session["attributes"]:
+        speech_output = "Hello " + session["attributes"]["user_name"]
+
+    else:
+        speech_output = "I don't know who you are."
+
+    return build_response(session["attributes"], build_speechlet_response(
+        card_title, speech_output, None, False))
 
 # --------------- Events ------------------
 
@@ -145,6 +159,8 @@ def on_intent(intent_request, session):
         return handle_session_end_request()
     elif intent_name == "SetUserNameIntent":
         return set_name_in_session(intent, session)
+    elif intent_name == "GetUserNameIntent":
+        return get_name_in_session(intent, session)
     else:
         raise ValueError("Invalid intent")
 
@@ -173,6 +189,10 @@ def lambda_handler(event, context):
     prevent someone else from configuring a skill that sends requests to this
     function.
     """
+
+    for key, value in event.iteritems():
+        print ("%s: %s" % (key, value))
+
     if (event['session']['application']['applicationId'] !=
             "amzn1.ask.skill.89e4d29c-e363-4c02-bc59-96521815a0af"):
         raise ValueError("Invalid Application ID")
