@@ -4,11 +4,14 @@
       "intent": "Testing"
     },
     {
+      "intent": "ReadSessionAttributes"
+    },
+    {
       "intent": "SetUserNameIntent",
       "slots": [
         {
           "name": "user_name",
-          "type": "PersonName"
+          "type": "AMAZON.LITERAL"
         }
       ]
     },
@@ -20,6 +23,12 @@
     },
     {
       "intent": "NextHint"
+    },
+    {
+      "intent": "AMAZON.YesIntent"
+    },
+    {
+      "intent": "AMAZON.NoIntent"
     },
     {
       "intent": "AMAZON.RepeatIntent"

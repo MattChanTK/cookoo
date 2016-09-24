@@ -7,10 +7,13 @@ Matthew Chan; Tammy Fan
 
 from __future__ import print_function
 
-
+session_attributes_key = ["user_name",
+                          "question_ids",
+                          "current_question_id",
+                          "score"]
 # --------------- Helpers that build all of the responses ----------------------
 
-def build_speechlet_response(title, output, reprompt_text, should_end_session):
+def build_speechlet_response(title, output, reprompt_text=None, should_end_session=False):
     return {
         'outputSpeech': {
             'type': 'PlainText',
@@ -38,22 +41,7 @@ def build_response(session_attributes, speechlet_response):
         'response': speechlet_response
     }
 
-
-# --------------- Functions that control the skill's behavior ------------------
-
-def get_welcome_response():
-    """ If we wanted to initialize the session to have some attributes we could
-    add those here
-    """
-    session_attributes = {}
-    card_title = "Welcome"
-    speech_output = "Hello! I am Cookoo, your cooking assistant. "
-    # If the user either does not reply to the welcome message or says something
-    # that is not understood, they will be prompted again with this text.
-    reprompt_text = "Please tell me what you would like to make."
-    should_end_session = False
-    return build_response(session_attributes, build_speechlet_response(
-        card_title, speech_output, reprompt_text, should_end_session))
+# --------------- Test functions -----------------------------
 
 def get_testing_response():
     """ If we wanted to initialize the session to have some attributes we could
@@ -72,9 +60,62 @@ def get_testing_response():
         card_title, speech_output, reprompt_text, should_end_session))
 
 
+def read_session_attributes(session):
+
+    card_title = "Testing"
+
+    speech_output = "Your session attributes are: "
+    for key, value in session.iteritems():
+        if key in session_attributes_key:
+            speech_output += ("%s: %s \n" % (key, value))
+
+    return build_response(session["attributes"], build_speechlet_response(
+        card_title, speech_output))
+
+
+# --------------- Functions that control the skill's behavior ------------------
+
+def get_welcome_response():
+    """ If we wanted to initialize the session to have some attributes we could
+    add those here
+    """
+    session_attributes = {
+        "user_name" : "Unknown Person",
+        "question_ids" : str(range(5)),
+        "current_question_id" : 0,
+        "score": 0,
+    }
+
+    card_title = "Welcome"
+    speech_output = "Hello! I am Cookoo. Let's play a game. " \
+                    "Are you ready to play?"
+
+    return build_response(session_attributes, build_speechlet_response(
+        card_title, speech_output))
+
+def handle_yes_intent(session):
+    try:
+        if int(session["attributes"]["current_question_id"]) ==  0:
+            pass
+    except:
+        handle_exception(session)
+
+def handle_unknown_intent(session):
+
+    card_title = "Unknown Intent"
+    speech_output = "What? What did you say?"
+    return build_response({}, build_speechlet_response(
+        card_title, speech_output))
+
+def handle_exception(session):
+    card_title = "Error"
+    speech_output = "Sorry, I encounter some internal issues."
+    return build_response({}, build_speechlet_response(
+        card_title, speech_output))
+
 def handle_session_end_request():
     card_title = "Session Ended"
-    speech_output = "Hope I have been useful. " \
+    speech_output = "Hope it was fun for you too. " \
                     "Have a nice day! "
     # Setting this to true ends the session and exits the skill.
     should_end_session = True
@@ -87,9 +128,9 @@ def set_name_in_session(intent, session):
     Record the name of the user
     """
 
-    card_title = intent['name']
-    session_attributes = {}
+    card_title = "Generic"
     should_end_session = False
+    session_attributes = session["attributes"]
     session_attributes["user_name"] = "Bob"
 
     if 'user_name' in intent['slots'] and 'value' in intent['slots']['user_name']:
@@ -106,11 +147,8 @@ def set_name_in_session(intent, session):
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
 
-def get_name_in_session(intent, session):
-    card_title = intent['name']
-
-    for key, value in session.iteritems():
-        print("%s: %s" % (key, value))
+def get_name_in_session(session):
+    card_title = "Generic"
 
     if "user_name" in session["attributes"]:
         speech_output = "Hello " + session["attributes"]["user_name"]
@@ -153,16 +191,30 @@ def on_intent(intent_request, session):
     # Dispatch to your skill's intent handlers
     if intent_name == "Testing":
         return get_testing_response()
-    elif intent_name == "AMAZON.HelpIntent":
-        return get_welcome_response()
-    elif intent_name == "AMAZON.CancelIntent" or intent_name == "AMAZON.StopIntent":
-        return handle_session_end_request()
+    elif intent_name == "ReadSessionAttributes":
+        return read_session_attributes(session)
     elif intent_name == "SetUserNameIntent":
         return set_name_in_session(intent, session)
     elif intent_name == "GetUserNameIntent":
-        return get_name_in_session(intent, session)
+        return get_name_in_session(session)
+    elif intent_name == "StartNewGame":
+        return get_testing_response()
+    elif intent_name == "NextHint":
+        return get_testing_response()
+    elif intent_name == "AMAZON.YesIntent":
+        return handle_yes_intent(session)
+    elif intent_name == "AMAZON.NoIntent":
+        return handle_yes_intent(session)
+    elif intent_name == "AMAZON.RepeatIntent":
+        return get_testing_response()
+    elif intent_name == "AMAZON.HelpIntent":
+        return get_welcome_response()
+    elif intent_name == "AMAZON.CancelIntent":
+        return get_testing_response()
+    elif intent_name == "AMAZON.StopIntent":
+        return handle_session_end_request()
     else:
-        raise ValueError("Invalid intent")
+        return handle_unknown_intent(session)
 
 
 def on_session_ended(session_ended_request, session):

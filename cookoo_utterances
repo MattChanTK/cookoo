@@ -1,5 +1,6 @@
 Testing test test
-SetUserNameIntent Set my name to {user_name}
+ReadSessionAttributes read attributes
+SetUserNameIntent Set my name to {slot value|user_name}
 GetUserNameIntent Read my name
 StartNewGame Play now
 NextHint Give me another hint
