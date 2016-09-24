@@ -1,0 +1,27 @@
+{
+  "ingredients": ["2 cups of white sugar",
+                  "one 3/4 cups of all-purpose flour",
+                  "3/4 cup of unsweetened cocoa powder",
+                  "one 1/2 teaspoons of baking powder",
+                  "one 1/2 teaspoons of baking soda",
+                  "one teaspoon of salt",
+                  "2 eggs",
+                  "1 cup of milk",
+                  "1/2 cup of vegetable oil",
+                  "2 teaspoons of vanilla extract",
+                  "1 cup of boiling water"],
+  "cook-time": {"Prep": 20, "Cook": 30, "Ready": 60},
+  "steps": [{"instruction": "Preheat oven to 350 degrees F (175 degrees C)"},
+            {"instruction": "Grease and flour two nine inch round pans."},
+            {"instruction": "Boil some water"},
+            {"instruction": "In a large bowl, stir together the sugar, flour, cocoa, baking powder, baking soda and salt. Add the eggs, milk, oil and vanilla, mix for 2 minutes on medium speed of mixer.", "time": 2}
+            {"instruction": "Stir in the boiling water and pour evenly into the prepared pans."},
+            {"instruction": "Bake for 33 minutes in the preheated oven.", "time": 33},
+            {"instruction": "Cool in the pans for 10 minutes", "time": 10},
+            {"instruction": "Remove the cake to a wire rack to cool completely."}]
+}
+
+
+
+
+
