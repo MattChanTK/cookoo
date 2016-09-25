@@ -1,6 +1,7 @@
 Testing test test
 ReadSessionAttributes read attributes
-SetUserNameIntent Set my name to {slot value|user_name}
-GetUserNameIntent Read my name
-StartNewGame Play now
-NextHint Give me another hint
+SetTeamNameIntent Set my name to {slot value|user_name}
+GetTeamNameIntent Read my name
+StartNewGameIntent Play now
+NextHintIntent Give me another hint
+GiveAnswerIntent The answer is {slot value|user_ans}

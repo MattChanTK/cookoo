@@ -112,6 +112,25 @@ def get_next_hint_response(intent, session):
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output))
 
+def check_answer(intent, session):
+    session_attributes = session['attributes']
+
+    if 'user_ans' in intent['slots'] and 'value' in intent['slots']['user_ans']:
+        user_ans = intent['slots']['user_ans']['value']
+        question_index = int(session_attributes['qindex'])
+        correct_ans = session_attributes['questions'][question_index]['a']
+        if user_ans.lower() == correct_ans.lower():
+            speech_output = "You are right!"
+        else:
+            speech_output = "You are wrong! It is not %s!" % user_ans
+
+        return build_response(session_attributes, build_speechlet_response(
+            "answering", speech_output))
+
+    else:
+        handle_unknown_intent(session)
+
+
 def get_welcome_response():
     """ If we wanted to initialize the session to have some attributes we could
     add those here
@@ -236,6 +255,8 @@ def on_intent(intent_request, session):
         return get_start_new_game_response()
     elif intent_name == "NextHintIntent":
         return get_next_hint_response(intent, session)
+    elif intent_name == "GiveAnswerIntent":
+        return check_answer(intent, session)
     elif intent_name == "AMAZON.YesIntent":
         return handle_yes_intent(session)
     elif intent_name == "AMAZON.NoIntent":
