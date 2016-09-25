@@ -25,6 +25,15 @@
       "intent": "NextHintIntent"
     },
     {
+      "intent": "GiveAnswerIntent",
+      "slots": [
+        {
+          "name": "user_ans",
+          "type": "AMAZON.LITERAL"
+        }
+      ]
+    },
+    {
       "intent": "AMAZON.YesIntent"
     },
     {
